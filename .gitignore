@@ -1,0 +1,4 @@
+.venv/
+uci.zip
+__pycache__/
+*.zip

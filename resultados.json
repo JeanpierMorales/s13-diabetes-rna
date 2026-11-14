@@ -1,0 +1,217 @@
+{
+ "rna": {
+  "train_acc": 0.9591346153846154,
+  "acc": 0.9326923076923077,
+  "f1": 0.943089430894309,
+  "auc": 0.992578125,
+  "kappa": 0.8610687022900764
+ },
+ "gbt": {
+  "train_acc": 1.0,
+  "acc": 0.9903846153846154,
+  "f1": 0.9921259842519685,
+  "auc": 1.0,
+  "kappa": 0.9797822706065319
+ },
+ "desafios": [
+  {
+   "Experimento": "Base RNA: [32,16], 80/20",
+   "train_acc": 0.9591,
+   "test_acc": 0.9327,
+   "F1": 0.9431,
+   "AUC": 0.9926,
+   "Observacion": "Referencia"
+  },
+  {
+   "Experimento": "Desaf\u00edo 1a: [64,32,16]",
+   "train_acc": 0.9688,
+   "test_acc": 0.9615,
+   "F1": 0.9683,
+   "AUC": 0.991,
+   "Observacion": "55 \u00e9pocas"
+  },
+  {
+   "Experimento": "Desaf\u00edo 1b: [128,64,32,16]",
+   "train_acc": 0.9543,
+   "test_acc": 0.9423,
+   "F1": 0.9516,
+   "AUC": 0.9887,
+   "Observacion": "40 \u00e9pocas"
+  },
+  {
+   "Experimento": "Desaf\u00edo 2a: Partici\u00f3n 50/50",
+   "train_acc": 0.9115,
+   "test_acc": 0.8962,
+   "F1": 0.9126,
+   "AUC": 0.9651,
+   "Observacion": "260 muestras de test"
+  },
+  {
+   "Experimento": "Desaf\u00edo 2-: Partici\u00f3n 70/30",
+   "train_acc": 0.956,
+   "test_acc": 0.9359,
+   "F1": 0.9462,
+   "AUC": 0.976,
+   "Observacion": "156 muestras de test"
+  },
+  {
+   "Experimento": "Desaf\u00edo 2-: Partici\u00f3n 90/10",
+   "train_acc": 0.9573,
+   "test_acc": 0.9231,
+   "F1": 0.9333,
+   "AUC": 0.9969,
+   "Observacion": "52 muestras de test"
+  },
+  {
+   "Experimento": "Desaf\u00edo 2b: Partici\u00f3n 95/5",
+   "train_acc": 0.9109,
+   "test_acc": 0.9615,
+   "F1": 0.9677,
+   "AUC": 1.0,
+   "Observacion": "26 muestras de test"
+  },
+  {
+   "Experimento": "Desaf\u00edo 3a: GBT 10 \u00e1rboles",
+   "train_acc": 0.9808,
+   "test_acc": 0.9808,
+   "F1": 0.9841,
+   "AUC": 0.9891,
+   "Observacion": "0.01 s"
+  },
+  {
+   "Experimento": "Desaf\u00edo 3b: GBT 500 \u00e1rboles",
+   "train_acc": 1.0,
+   "test_acc": 0.9808,
+   "F1": 0.9841,
+   "AUC": 1.0,
+   "Observacion": "0.18 s"
+  },
+  {
+   "Experimento": "Desaf\u00edo 4a: GBT lr=0.001",
+   "train_acc": 0.6154,
+   "test_acc": 0.6154,
+   "F1": 0.7619,
+   "AUC": 0.991,
+   "Observacion": ""
+  },
+  {
+   "Experimento": "Desaf\u00edo 4b: GBT lr=1.0",
+   "train_acc": 1.0,
+   "test_acc": 0.9808,
+   "F1": 0.9841,
+   "AUC": 0.9992,
+   "Observacion": ""
+  },
+  {
+   "Experimento": "Desaf\u00edo 5: Sin Poliuria",
+   "train_acc": 0.9159,
+   "test_acc": 0.8942,
+   "F1": 0.9091,
+   "AUC": 0.9676,
+   "Observacion": ""
+  },
+  {
+   "Experimento": "Desaf\u00edo 6: RNA semilla 0",
+   "train_acc": 0.8798,
+   "test_acc": 0.8942,
+   "F1": 0.912,
+   "AUC": 0.9559,
+   "Observacion": ""
+  },
+  {
+   "Experimento": "Desaf\u00edo 6: GBT semilla 0",
+   "train_acc": 1.0,
+   "test_acc": 0.9808,
+   "F1": 0.9844,
+   "AUC": 0.9969,
+   "Observacion": ""
+  }
+ ],
+ "tiempos": {
+  "10": 0.005371809005737305,
+  "50": 0.024493932723999023,
+  "100": 0.050247907638549805,
+  "200": 0.10161209106445312,
+  "500": 0.17824983596801758
+ },
+ "lrs": {
+  "0.001": 0.6153846153846154,
+  "0.01": 0.9807692307692307,
+  "0.1": 0.9903846153846154,
+  "0.3": 0.9807692307692307,
+  "1.0": 0.9807692307692307
+ },
+ "semillas": {
+  "RNA": [
+   0.8942307692307693,
+   0.9230769230769231,
+   0.8942307692307693,
+   0.9326923076923077,
+   0.9134615384615384
+  ],
+  "GBT": [
+   0.9807692307692307,
+   0.9903846153846154,
+   0.9807692307692307,
+   0.9903846153846154,
+   0.9615384615384616
+  ]
+ },
+ "corr": {
+  "Poliuria": 0.666,
+  "Polidipsia": 0.649,
+  "Genero": 0.449,
+  "Perdida_repentina_peso": 0.437,
+  "Paresia_parcial": 0.432,
+  "Polifagia": 0.343,
+  "Irritabilidad": 0.299,
+  "Vision_borrosa": 0.251,
+  "Debilidad": 0.243,
+  "Rigidez_muscular": 0.122,
+  "Candidiasis_genital": 0.11,
+  "Edad": 0.109,
+  "Obesidad": 0.072,
+  "Cicatrizacion_lenta": 0.047,
+  "Picazon": -0.013,
+  "Alopecia": -0.268
+ },
+ "imp": {
+  "Poliuria": 0.3927,
+  "Polidipsia": 0.129,
+  "Genero": 0.1181,
+  "Edad": 0.0813,
+  "Alopecia": 0.0581,
+  "Rigidez_muscular": 0.0412,
+  "Cicatrizacion_lenta": 0.0412,
+  "Candidiasis_genital": 0.0297,
+  "Perdida_repentina_peso": 0.0262,
+  "Irritabilidad": 0.0252,
+  "Obesidad": 0.0189,
+  "Vision_borrosa": 0.0142,
+  "Picazon": 0.0102,
+  "Polifagia": 0.0055,
+  "Debilidad": 0.0043,
+  "Paresia_parcial": 0.0042
+ },
+ "epocas": 61,
+ "cm_rna": [
+  [
+   39,
+   1
+  ],
+  [
+   6,
+   58
+  ]
+ ],
+ "cm_gbt": [
+  [
+   40,
+   0
+  ],
+  [
+   1,
+   63
+  ]
+ ]
+}
