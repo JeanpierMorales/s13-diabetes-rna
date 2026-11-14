@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Predictor de Diabetes — RNA</title>
+<style>
+:root{--navy:#002060;--navy2:#0b3a8c;--bg:#eef1f7;--card:#fff;--ink:#16203a;--mute:#5d6782;--line:#dde3ee;--red:#d32f2f;--amber:#f2a516;--green:#2e9d5b}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(120deg,#001640,var(--navy) 55%,var(--navy2));color:#fff;padding:22px 16px 0}
+.hwrap{max-width:1180px;margin:0 auto}h1{margin:0;font-size:1.55rem;letter-spacing:-.01em}.sub{opacity:.8;font-size:.9rem;margin:4px 0 16px}
+nav{display:flex;gap:4px}nav button{background:transparent;color:#c9d4ee;border:0;padding:11px 18px;font:600 .95rem inherit;border-radius:10px 10px 0 0;cursor:pointer}
+nav button.on{background:var(--bg);color:var(--navy)}
+main{max-width:1180px;margin:0 auto;padding:20px 16px 40px}.tab{display:none}.tab.on{display:block}
+.layout{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;align-items:start}
+.card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(10,30,80,.06),0 6px 20px rgba(10,30,80,.05);margin-bottom:20px}
+.card h3{margin:0 0 12px;font-size:1rem;color:var(--navy)}.hint{color:var(--mute);font-size:.85rem;margin:-6px 0 12px}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.presets button{border:1px solid var(--line);background:#f7f9fd;color:var(--navy);padding:8px 12px;border-radius:999px;font:600 .85rem inherit;cursor:pointer}
+.presets button:hover{border-color:var(--navy)}
+.row{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:14px}label.f{display:block;font-weight:600;font-size:.85rem;margin-bottom:6px;color:var(--mute)}
+.age{display:flex;align-items:center;gap:10px}.age input[type=range]{flex:1;accent-color:var(--navy)}.age output{font-weight:700;font-size:1.2rem;min-width:2.4em;text-align:right}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.seg button{flex:1;border:0;background:#fff;padding:9px;font:600 .9rem inherit;cursor:pointer;color:var(--mute)}.seg button.on{background:var(--navy);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:8px}
+.chip{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:#fff;font-size:.9rem;user-select:none;transition:border-color .15s,background .15s}
+.chip.on{border-color:var(--navy);background:#eaf0fb;font-weight:600}.chip .w{font-size:.72rem;color:var(--mute);font-variant-numeric:tabular-nums}
+.chip:focus-visible,button:focus-visible{outline:3px solid #7aa2ff;outline-offset:2px}
+.result{position:sticky;top:12px}
+.gauge{display:block;margin:0 auto;width:100%;max-width:340px}.verdict{text-align:center;font-weight:800;font-size:1.25rem;margin:4px 0 2px}.vsub{text-align:center;color:var(--mute);font-size:.85rem}
+.why .r{display:grid;grid-template-columns:150px 1fr 56px;align-items:center;gap:8px;font-size:.85rem;margin:6px 0}.why .bar{height:12px;background:#f0f2f7;border-radius:6px;position:relative;overflow:hidden}
+.why .bar i{position:absolute;top:0;bottom:0;border-radius:6px}.why .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.aviso{font-size:.8rem;color:var(--mute);text-align:center;margin-top:10px}
+canvas{width:100%;display:block}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.kpi{background:#f6f8fc;border-radius:12px;padding:12px}.kpi b{display:block;font-size:1.35rem}.kpi span{font-size:.8rem;color:var(--mute)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--mute);font-weight:600}
+.cms{display:grid;grid-template-columns:1fr 1fr;gap:16px}.cm{display:grid;grid-template-columns:60px 1fr 1fr;gap:4px;font-size:.8rem}.cm div{padding:12px 4px;text-align:center;border-radius:6px}.cm .h{color:var(--mute);background:none;padding:4px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+footer{text-align:center;font-size:.8rem;color:var(--mute);padding:10px 16px 30px}
+@media(max-width:900px){.layout,.cols,.cms{grid-template-columns:1fr}.result{position:static}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.row{grid-template-columns:1fr}.why .r{grid-template-columns:110px 1fr 50px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<header><div class="hwrap"><h1>Predictor de Diabetes — RNA</h1><div class="sub">Perceptrón multicapa [16]→[32]→[16]→[1] ejecutado en tu navegador · Grupo 7 · Agentes Inteligentes USIL</div>
+<nav><button class="on" data-t="pred">Predictor</button><button data-t="red">Dentro de la red</button><button data-t="mod">Resultados del modelo</button></nav></div></header>
+<main>
+<section class="tab on" id="pred"><div class="layout">
+<div>
+<div class="card"><h3>Paciente</h3><p class="hint">La predicción se actualiza en vivo. Prueba un caso de ejemplo:</p>
+<div class="presets"><button data-p="clasico">Cuadro clásico</button><button data-p="sano">Sin síntomas</button><button data-p="sutil">Caso sutil</button><button data-p="azar">Paciente al azar</button><button data-p="limpiar">Limpiar</button></div>
+<div class="row"><div><label class="f" for="edad">Edad</label><div class="age"><input type="range" id="edad" min="16" max="90" value="45"><output id="edadv">45</output></div></div>
+<div><span class="f" style="display:block;font-weight:600;font-size:.85rem;margin-bottom:6px;color:var(--mute)">Género</span><div class="seg" id="gen"><button data-v="1" class="on">Masculino</button><button data-v="2">Femenino</button></div></div></div>
+<label class="f">Síntomas <span style="font-weight:400">(el número indica cuánto movería el riesgo marcarlo)</span></label><div class="grid" id="sint"></div></div>
+<div class="card"><h3>¿Cómo cambia el riesgo con la edad?</h3><p class="hint">Misma combinación de síntomas, de 16 a 90 años. El punto es la edad actual.</p><canvas id="curva" height="190"></canvas></div>
+</div>
+<div class="result">
+<div class="card"><svg class="gauge" viewBox="0 0 300 175" role="img" aria-label="Medidor de riesgo">
+<defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#2e9d5b"/><stop offset=".5" stop-color="#f2a516"/><stop offset="1" stop-color="#d32f2f"/></linearGradient></defs>
+<path d="M30 150 A120 120 0 0 1 270 150" fill="none" stroke="#edf0f5" stroke-width="22" stroke-linecap="round"/>
+<path id="arc" d="M30 150 A120 120 0 0 1 270 150" fill="none" stroke="url(#gg)" stroke-width="22" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" style="transition:stroke-dasharray .5s cubic-bezier(.2,.8,.2,1)"/>
+
+<text x="150" y="138" text-anchor="middle" font-size="40" font-weight="800" fill="var(--ink)" id="pct">0%</text></svg>
+<div class="verdict" id="verd"></div><div class="vsub" id="vsub"></div></div>
+<div class="card why"><h3>¿Por qué este resultado?</h3><p class="hint">Cuánto baja o sube la probabilidad si se quita cada síntoma marcado, y los que más la subirían.</p><div id="why"></div></div>
+<p class="aviso">Resultado orientativo. Consulte a un profesional médico.</p>
+</div></div></section>
+
+<section class="tab" id="red"><div class="card"><h3>La red pensando en vivo</h3><p class="hint">Cada círculo es una neurona; su brillo es su activación para el paciente actual (azul negativo, naranja positivo). Las líneas muestran las conexiones más fuertes que llevan señal. Cambia síntomas en el Predictor y vuelve aquí.</p><canvas id="net" height="520"></canvas></div>
+<div class="card"><h3>Qué ocurre en cada capa</h3><p class="hint" style="margin:0">1) Cada entrada se normaliza con Z-score (media y desviación del entrenamiento). 2) Capa oculta 1: 32 neuronas, z = Wx + b y tanh. 3) Capa oculta 2: 16 neuronas, tanh. 4) Salida: 1 neurona con sigmoide, que da la probabilidad entre 0 y 1. Todos los pesos vienen del modelo exportado (PesosRedNeuronal.pmml) y el cálculo se hace aquí, sin servidor.</p></div></section>
+
+<section class="tab" id="mod">
+<div class="card"><h3>RNA frente a Gradient Boosted Trees (conjunto de prueba, 104 pacientes)</h3><div class="kpis" id="kpis"></div><div style="overflow-x:auto;margin-top:14px"><table id="tm"></table></div></div>
+<div class="cols"><div class="card"><h3>Matrices de confusión</h3><div class="cms" id="cms"></div></div>
+<div class="card"><h3>Importancia de variables (GBT)</h3><div class="why" id="imp"></div></div></div>
+<div class="card"><h3>Desafíos: un parámetro a la vez</h3><div style="overflow-x:auto"><table id="td"></table></div></div>
+</section>
+</main>
+<footer>Morales Silva, Omar Jean Piere (2313215) · Maquen Caisan, Fabian (2311685) · Alcalá Barzola, Matias Alejandro (2313378)</footer>
+<script>
+const M=__M__, R=__R__;
+const NOM={Poliuria:'Poliuria',Polidipsia:'Polidipsia',Perdida_repentina_peso:'Pérdida repentina de peso',Debilidad:'Debilidad',Polifagia:'Polifagia',Candidiasis_genital:'Candidiasis genital',Vision_borrosa:'Visión borrosa',Picazon:'Picazón',Irritabilidad:'Irritabilidad',Cicatrizacion_lenta:'Cicatrización lenta',Paresia_parcial:'Paresia parcial',Rigidez_muscular:'Rigidez muscular',Alopecia:'Alopecia',Obesidad:'Obesidad',Edad:'Edad',Genero:'Género'};
+const S=M.features.slice(2), st={edad:45,gen:1,s:new Set()};
+const $=id=>document.getElementById(id);
+function forward(x,trace){let a=x.map((v,i)=>(v-M.mean[i])/M.std[i]);const acts=[a];
+ for(let l=0;l<M.W.length;l++){const W=M.W[l],b=M.b[l];const z=b.map((bj,j)=>{let s=bj;for(let i=0;i<a.length;i++)s+=a[i]*W[i][j];return s});
+  a=l<M.W.length-1?z.map(Math.tanh):z.map(v=>1/(1+Math.exp(-v)));acts.push(a)}
+ return trace?acts:a[0]}
+const vec=(o={})=>{const e=o.edad??st.edad,g=o.gen??st.gen,s=o.s??st.s;return[e,g,...S.map(k=>s.has(k)?1:0)]};
+// chips
+S.forEach(k=>{const c=document.createElement('div');c.className='chip';c.tabIndex=0;c.setAttribute('role','checkbox');c.dataset.k=k;c.innerHTML='<span>'+NOM[k]+'</span><span class="w"></span>';
+ const t=()=>{st.s.has(k)?st.s.delete(k):st.s.add(k);upd()};c.onclick=t;c.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();t()}};$('sint').appendChild(c)});
+$('edad').oninput=e=>{st.edad=+e.target.value;upd()};
+document.querySelectorAll('#gen button').forEach(b=>b.onclick=()=>{st.gen=+b.dataset.v;upd()});
+const PRE={clasico:{edad:52,gen:2,s:['Poliuria','Polidipsia','Perdida_repentina_peso','Debilidad','Polifagia']},sano:{edad:40,gen:1,s:[]},sutil:{edad:58,gen:1,s:['Paresia_parcial','Vision_borrosa','Debilidad']},limpiar:{edad:45,gen:1,s:[]}};
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{let p=PRE[b.dataset.p];if(b.dataset.p==='azar')p={edad:20+Math.floor(Math.random()*60),gen:1+Math.round(Math.random()),s:S.filter(()=>Math.random()<.3)};st.edad=p.edad;st.gen=p.gen;st.s=new Set(p.s);upd()});
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button,.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.t).classList.add('on');if(b.dataset.t==='red')drawNet()});
+const pc=v=>(v*100).toFixed(1)+'%', col=p=>p>=.5?'var(--red)':p>=.3?'var(--amber)':'var(--green)';
+function upd(){const p=forward(vec());
+ $('edad').value=st.edad;$('edadv').textContent=st.edad;document.querySelectorAll('#gen button').forEach(b=>b.classList.toggle('on',+b.dataset.v===st.gen));
+ $('arc').setAttribute('stroke-dasharray',(p*100)+' 100');$('pct').textContent=pc(p);
+ $('verd').textContent=p>=.5?'⚠️ RIESGO ALTO de Diabetes':'✅ RIESGO BAJO de Diabetes';$('verd').style.color=p>=.5?'var(--red)':'var(--green)';
+ $('vsub').textContent=st.s.size+' síntoma'+(st.s.size===1?'':'s')+' · '+st.edad+' años · '+(st.gen===1?'masculino':'femenino');
+ // chips + deltas
+ const d={};S.forEach(k=>{const s2=new Set(st.s);s2.has(k)?s2.delete(k):s2.add(k);d[k]=forward(vec({s:s2}))-p});
+ document.querySelectorAll('.chip').forEach(c=>{const k=c.dataset.k,on=st.s.has(k);c.classList.toggle('on',on);c.setAttribute('aria-checked',on);const v=on?-d[k]:d[k];c.querySelector('.w').textContent=(v>=0?'+':'')+(v*100).toFixed(0)});
+ const act=[...st.s].map(k=>({k,v:-d[k],t:'presente'})).sort((a,b)=>b.v-a.v);
+ const add=S.filter(k=>!st.s.has(k)).map(k=>({k,v:d[k],t:'si se añade'})).sort((a,b)=>b.v-a.v).slice(0,3);
+ const rows=[...act,...add];const mx=Math.max(.05,...rows.map(r=>Math.abs(r.v)));
+ $('why').innerHTML=(act.length?'':'<p class="hint">Sin síntomas marcados. Estos son los que más subirían el riesgo:</p>')+rows.map(r=>{const w=Math.abs(r.v)/mx*50;const pos=r.v>=0;
+  return '<div class="r"><span>'+NOM[r.k]+' <small style="color:var(--mute)">'+(r.t==='presente'?'':'(+)')+'</small></span><div class="bar"><i style="left:'+(pos?50:50-w)+'%;width:'+w+'%;background:'+(pos?'var(--red)':'var(--green)')+'"></i><i style="left:50%;width:1px;background:#b7c0d3"></i></div><span class="v" style="color:'+(pos?'var(--red)':'var(--green)')+'">'+(pos?'+':'')+(r.v*100).toFixed(1)+'</span></div>'}).join('');
+ drawCurve();if($('red').classList.contains('on'))drawNet()}
+function setup(c){const r=devicePixelRatio||1,w=c.clientWidth,h=+c.getAttribute('height');c.width=w*r;c.height=h*r;c.style.height=h+'px';const x=c.getContext('2d');x.scale(r,r);return[x,w,h]}
+function drawCurve(){const[x,w,h]=setup($('curva'));const L=34,B=h-24,T=10,Rt=w-10;x.font='11px system-ui';x.fillStyle='#5d6782';x.strokeStyle='#e3e8f1';
+ [0,.5,1].forEach(v=>{const y=B-(B-T)*v;x.beginPath();x.moveTo(L,y);x.lineTo(Rt,y);x.stroke();x.fillText((v*100)+'%',4,y+4)});
+ x.setLineDash([4,4]);x.strokeStyle='#d32f2f88';const y5=B-(B-T)*.5;x.beginPath();x.moveTo(L,y5);x.lineTo(Rt,y5);x.stroke();x.setLineDash([]);
+ [16,30,45,60,75,90].forEach(a=>x.fillText(a,L+(a-16)/74*(Rt-L)-6,h-6));
+ const g=x.createLinearGradient(0,B,0,T);g.addColorStop(0,'#2e9d5b');g.addColorStop(.5,'#f2a516');g.addColorStop(1,'#d32f2f');x.strokeStyle=g;x.lineWidth=3;x.beginPath();
+ for(let a=16;a<=90;a++){const X=L+(a-16)/74*(Rt-L),Y=B-(B-T)*forward(vec({edad:a}));a===16?x.moveTo(X,Y):x.lineTo(X,Y)}x.stroke();
+ const p=forward(vec()),X=L+(st.edad-16)/74*(Rt-L),Y=B-(B-T)*p;x.fillStyle='#002060';x.beginPath();x.arc(X,Y,6,0,7);x.fill();x.fillStyle='#fff';x.beginPath();x.arc(X,Y,2.5,0,7);x.fill()}
+function drawNet(){const c=$('net');const[x,w,h]=setup(c);const A=forward(vec(),true);const n=A.length,pad=60,pl=Math.min(190,w*.3);
+ const pos=A.map((a,l)=>a.map((_,i)=>[pl+(w-pl-pad)*l/(n-1),24+(h-48)*(a.length===1?.5:i/(a.length-1))]));
+ for(let l=0;l<n-1;l++){const W=M.W[l];const e=[];for(let i=0;i<A[l].length;i++)for(let j=0;j<A[l+1].length;j++)e.push([i,j,W[i][j]*A[l][i]]);
+  e.sort((a,b)=>Math.abs(b[2])-Math.abs(a[2]));const top=e.slice(0,l===n-2?16:90),mx=Math.abs(top[0][2])||1;
+  top.forEach(([i,j,v])=>{x.strokeStyle=(v>0?'rgba(232,121,30,':'rgba(40,96,200,')+(.12+.6*Math.abs(v)/mx)+')';x.lineWidth=.5+2.5*Math.abs(v)/mx;x.beginPath();x.moveTo(...pos[l][i]);x.lineTo(...pos[l+1][j]);x.stroke()})}
+ A.forEach((a,l)=>a.forEach((v,i)=>{const[X,Y]=pos[l][i];const t=l===n-1?(v-.5)*2:Math.max(-1,Math.min(1,l===0?v/2:v));const r=l===n-1?16:l===0?7:6;
+  x.fillStyle=t>=0?'rgba(232,121,30,'+(.15+.85*t)+')':'rgba(40,96,200,'+(.15+.85*-t)+')';x.strokeStyle='#002060';x.lineWidth=1;x.beginPath();x.arc(X,Y,r,0,7);x.fill();x.stroke();
+  if(l===0){x.fillStyle='#16203a';x.font='11px system-ui';x.textAlign='right';x.fillText(NOM[M.features[i]],X-12,Y+4)}
+  if(l===n-1){x.fillStyle='#16203a';x.font='bold 13px system-ui';x.textAlign='left';x.fillText(pc(v),X+22,Y+5)}}));
+ x.textAlign='center';x.fillStyle='#5d6782';x.font='600 11px system-ui';['Entrada (16)','Oculta 1 (32)','Oculta 2 (16)','Salida'].forEach((t,l)=>x.fillText(t,pos[l][0][0],h-4))}
+// tab modelo
+const f4=v=>(+v).toFixed(4);
+$('kpis').innerHTML=[['Accuracy',R.rna.acc,R.gbt.acc],['F1',R.rna.f1,R.gbt.f1],['AUC',R.rna.auc,R.gbt.auc],['Kappa',R.rna.kappa,R.gbt.kappa]].map(([n,a,b])=>'<div class="kpi"><span>'+n+'</span><b>'+(n==='Accuracy'?pc(a):f4(a))+'</b><span>RNA · GBT: '+(n==='Accuracy'?pc(b):f4(b))+'</span></div>').join('');
+$('tm').innerHTML='<tr><th>Modelo</th><th>Train acc.</th><th>Test acc.</th><th>F1</th><th>AUC</th><th>Kappa</th></tr>'+[['RNA [32,16]',R.rna],['Gradient Boosted Trees',R.gbt]].map(([n,r])=>'<tr><td>'+n+'</td><td>'+pc(r.train_acc)+'</td><td>'+pc(r.acc)+'</td><td>'+f4(r.f1)+'</td><td>'+f4(r.auc)+'</td><td>'+f4(r.kappa)+'</td></tr>').join('');
+$('cms').innerHTML=[['RNA',R.cm_rna],['GBT',R.cm_gbt]].map(([n,m])=>{const mx=Math.max(...m.flat());const c=v=>'background:rgba(0,32,96,'+(.08+.8*v/mx)+');color:'+(v/mx>.5?'#fff':'#16203a');
+ return '<div><b style="font-size:.9rem">'+n+'</b><div class="cm" style="margin-top:6px"><div class="h"></div><div class="h">Pred. Neg</div><div class="h">Pred. Pos</div><div class="h">Real Neg</div><div style="'+c(m[0][0])+'">'+m[0][0]+'</div><div style="'+c(m[0][1])+'">'+m[0][1]+'</div><div class="h">Real Pos</div><div style="'+c(m[1][0])+'">'+m[1][0]+'</div><div style="'+c(m[1][1])+'">'+m[1][1]+'</div></div></div>'}).join('');
+const imx=Math.max(...Object.values(R.imp));$('imp').innerHTML=Object.entries(R.imp).slice(0,10).map(([k,v])=>'<div class="r"><span>'+NOM[k]+'</span><div class="bar"><i style="left:0;width:'+(v/imx*100)+'%;background:var(--navy)"></i></div><span class="v">'+(v*100).toFixed(1)+'%</span></div>').join('');
+$('td').innerHTML='<tr><th>Experimento</th><th>Train acc.</th><th>Test acc.</th><th>F1</th><th>AUC</th><th>Obs.</th></tr>'+R.desafios.map(f=>'<tr><td>'+f.Experimento+'</td><td>'+f.train_acc.toFixed(4)+'</td><td>'+f.test_acc.toFixed(4)+'</td><td>'+f.F1.toFixed(4)+'</td><td>'+f.AUC.toFixed(4)+'</td><td>'+f.Observacion+'</td></tr>').join('');
+addEventListener('resize',()=>{drawCurve();if($('red').classList.contains('on'))drawNet()});
+upd();
+if(location.hash){const b=document.querySelector('nav button[data-t="'+location.hash.slice(1)+'"]');if(b)b.click()}
+</script></body></html>
